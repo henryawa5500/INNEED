@@ -1,0 +1,98 @@
+export const jobs = [
+  {
+    id: "job-1",
+    title: "Home Cleaner Needed",
+    category: "Cleaner",
+    location: "Kubwa, Abuja",
+    pay: "NGN 25,000/week",
+    type: "Part-Time",
+    postedBy: "Mrs. Awa",
+    description:
+      "Looking for an experienced cleaner for a 3-bedroom apartment. Duties include sweeping, mopping, laundry, and organizing twice a week.",
+    requirements: ["2+ years experience", "Attention to detail", "Lives close to Kubwa"],
+  },
+  {
+    id: "job-2",
+    title: "Math Tutor for SS2",
+    category: "Tutoring",
+    location: "Wuse 2, Abuja",
+    pay: "NGN 8,000/session",
+    type: "Contract",
+    postedBy: "Mr. Bello",
+    description:
+      "Need a patient math tutor for SS2 student preparing for WAEC. Sessions are 3 evenings per week.",
+    requirements: ["Strong math background", "Teaching experience", "Good communication"],
+  },
+  {
+    id: "job-3",
+    title: "Dispatch Rider",
+    category: "Delivery",
+    location: "Ikeja, Lagos",
+    pay: "NGN 120,000/month",
+    type: "Full-Time",
+    postedBy: "SwiftDrop Logistics",
+    description:
+      "Join our delivery team to handle same-day package delivery. Bike and riding gear provided.",
+    requirements: ["Valid rider permit", "Knowledge of Lagos routes", "Punctual"],
+  },
+  {
+    id: "job-4",
+    title: "Event Ushers Needed",
+    category: "Event Staff",
+    location: "Garki, Abuja",
+    pay: "NGN 15,000/day",
+    type: "Gig",
+    postedBy: "TMS Events",
+    description:
+      "We need 10 ushers for a corporate event this weekend. Tasks include guest coordination and seating support.",
+    requirements: ["Smart appearance", "Friendly attitude", "Availability on Saturday"],
+  },
+  {
+    id: "job-5",
+    title: "Errand Assistant",
+    category: "Errands",
+    location: "Surulere, Lagos",
+    pay: "NGN 50,000/month",
+    type: "Part-Time",
+    postedBy: "Mr. Tunde",
+    description:
+      "Personal assistant to run daily errands, bank visits, and basic deliveries around Surulere.",
+    requirements: ["Trustworthy", "Can use smartphone maps", "Good time management"],
+  },
+  {
+    id: "job-6",
+    title: "Garden Maintenance Worker",
+    category: "Gardener",
+    location: "Asokoro, Abuja",
+    pay: "NGN 80,000/month",
+    type: "Full-Time",
+    postedBy: "GreenHomes",
+    description:
+      "Maintain lawns, trim hedges, and keep flower beds healthy for a residential estate.",
+    requirements: ["Basic gardening skills", "Physical fitness", "Reliability"],
+  },
+  {
+    id: "job-7",
+    title: "Female Tailor",
+    category: "Tailor",
+    location: "Yaba, Lagos",
+    pay: "NGN 90,000/month + bonus",
+    type: "Full-Time",
+    postedBy: "StyleHub",
+    description:
+      "Seeking a skilled tailor with excellent finishing for native and English wears.",
+    requirements: ["Pattern drafting", "Sewing accuracy", "Portfolio of completed outfits"],
+  },
+  {
+    id: "job-8",
+    title: "Elderly Care Taker",
+    category: "Care Taker",
+    location: "Maitama, Abuja",
+    pay: "NGN 110,000/month",
+    type: "Live-In",
+    postedBy: "The Okafor Family",
+    description:
+      "Provide daily care and companionship for an elderly woman. Includes medication reminders and light meal prep.",
+    requirements: ["Caregiving experience", "Empathy", "Basic first aid"],
+  },
+];
