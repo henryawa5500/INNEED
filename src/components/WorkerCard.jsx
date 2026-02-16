@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function WorkerCard({ worker }) {
   return (
     <article className="worker-card">
@@ -7,9 +9,9 @@ function WorkerCard({ worker }) {
       <p className="muted">
         Rating: {worker.rating} | Jobs done: {worker.jobsDone}
       </p>
-      <button type="button" className="ghost-btn">
+      <Link to={`/workers/${worker.id}`} className="ghost-btn">
         View Profile
-      </button>
+      </Link>
     </article>
   );
 }

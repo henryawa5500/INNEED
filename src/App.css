@@ -402,6 +402,14 @@ ul {
   margin-bottom: 1.4rem;
 }
 
+.section-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .section-head h2 {
   font-size: clamp(2rem, 4.3vw, 3.05rem);
   margin-bottom: 0;
@@ -624,6 +632,12 @@ ul {
   font-size: clamp(2rem, 4vw, 3.2rem);
 }
 
+.workers-page h1,
+.worker-details h1,
+.create-profile-page h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
 .post-job-form {
   margin-top: 1.2rem;
   background: #fff;
@@ -671,6 +685,26 @@ ul {
   display: flex;
   gap: 0.7rem;
   justify-content: flex-end;
+}
+
+.worker-details {
+  max-width: 840px;
+}
+
+.worker-details-card {
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 1rem;
+}
+
+.worker-details-card h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.worker-details-card ul {
+  margin: 0 0 1rem;
 }
 
 .filters {
@@ -927,6 +961,10 @@ ul {
 
   .filters {
     grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .workers-page .filters {
+    grid-template-columns: 2fr 1fr;
   }
 
   .footer-grid {

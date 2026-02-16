@@ -33,6 +33,13 @@ function Navbar() {
           >
             Find Jobs
           </NavLink>
+          <NavLink
+            to="/workers"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
+          >
+            Find Workers
+          </NavLink>
           <span className="nav-divider" aria-hidden="true" />
           <Link to="/post-job" className="post-job-btn" onClick={closeMenu}>
             Post Job
