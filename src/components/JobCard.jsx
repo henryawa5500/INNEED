@@ -5,7 +5,7 @@ function JobCard({ job }) {
     <article className="job-card">
       <span className="pill">{job.type}</span>
       <h3>{job.title}</h3>
-      <p className="muted">{job.postedBy}</p>
+      <p className="muted job-author">{job.postedBy}</p>
       <p className="muted">{job.location}</p>
       <p className="job-pay">{job.pay}</p>
       <p className="job-desc">{job.description}</p>

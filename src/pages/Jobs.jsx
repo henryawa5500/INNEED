@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import JobCard from "../components/JobCard";
-import { jobs } from "../data/jobs";
+import { useJobs } from "../context/JobsContext";
 
 function Jobs() {
+  const { jobs } = useJobs();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const initialCategory = searchParams.get("category") || "All";
@@ -14,8 +15,8 @@ function Jobs() {
   const [location, setLocation] = useState(initialLocation);
 
   // Filter options are generated from source data to stay in sync as data evolves.
-  const categories = useMemo(() => ["All", ...new Set(jobs.map((job) => job.category))], []);
-  const locations = useMemo(() => ["All", ...new Set(jobs.map((job) => job.location.split(", ").pop()))], []);
+  const categories = useMemo(() => ["All", ...new Set(jobs.map((job) => job.category))], [jobs]);
+  const locations = useMemo(() => ["All", ...new Set(jobs.map((job) => job.location.split(", ").pop()))], [jobs]);
 
   // Keep URL query params aligned with local filter state for sharable links.
   useEffect(() => {
@@ -33,7 +34,7 @@ function Jobs() {
       const byLocation = location === "All" || job.location.toLowerCase().includes(location.toLowerCase());
       return bySearch && byCategory && byLocation;
     });
-  }, [search, category, location]);
+  }, [jobs, search, category, location]);
 
   return (
     <section className="section container jobs-page">

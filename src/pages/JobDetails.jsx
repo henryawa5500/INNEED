@@ -1,8 +1,9 @@
 import { Link, useParams } from "react-router-dom";
-import { jobs } from "../data/jobs";
+import { useJobs } from "../context/JobsContext";
 
 function JobDetails() {
   const { id } = useParams();
+  const { jobs } = useJobs();
   // Detail page resolves the record directly from local mock data.
   const job = jobs.find((item) => item.id === id);
 
@@ -17,8 +18,9 @@ function JobDetails() {
     );
   }
 
+  const whatsappNumber = (job.contactWhatsapp || "2348000000000").replace(/\D/g, "");
   const whatsappMessage = encodeURIComponent(`Hi, I am interested in the ${job.title} role on INNEED.`);
-  const whatsappUrl = `https://wa.me/2348000000000?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
   return (
     <section className="section container job-details">

@@ -10,7 +10,7 @@ function Navbar() {
     <header className="navbar-wrap">
       <nav className="container navbar" aria-label="Main navigation">
         <Link to="/" className="logo" onClick={closeMenu}>
-          <span className="logo-dot" aria-hidden="true" />
+          <img src="/inneed-logo.svg" alt="" className="brand-mark" aria-hidden="true" />
           INNEED
         </Link>
 
@@ -26,12 +26,17 @@ function Navbar() {
         </button>
 
         <div className={`nav-links ${isOpen ? "open" : ""}`}>
-          <NavLink to="/jobs" className="nav-link" onClick={closeMenu}>
+          <NavLink
+            to="/jobs"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+            onClick={closeMenu}
+          >
             Find Jobs
           </NavLink>
-          <button type="button" className="post-job-btn" onClick={closeMenu}>
+          <span className="nav-divider" aria-hidden="true" />
+          <Link to="/post-job" className="post-job-btn" onClick={closeMenu}>
             Post Job
-          </button>
+          </Link>
         </div>
       </nav>
     </header>
