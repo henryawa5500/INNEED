@@ -123,7 +123,7 @@ ul {
   width: 2.25rem;
   height: 2.25rem;
   border: 1px solid var(--line);
-  border-radius: 50%;
+  border-radius: 0;
   background: #fff;
   display: inline-flex;
   flex-direction: column;
@@ -186,7 +186,7 @@ ul {
 
 .post-job-btn {
   padding: 0.8rem 1.45rem;
-  border-radius: 2px;
+  border-radius: 0;
   text-transform: uppercase;
   letter-spacing: 0.015em;
   font-size: 0.95rem;
@@ -422,6 +422,7 @@ ul {
 
 .link-btn {
   border: 0;
+  border-radius: 0;
   background: transparent;
   color: #0a9a42;
   font-weight: 600;
@@ -604,7 +605,7 @@ ul {
 .ghost-btn {
   margin-top: 0.8rem;
   display: inline-block;
-  border-radius: 999px;
+  border-radius: 0;
   background: #edf9f3;
   border: 1px solid #c8ecd9;
   color: #0d8a43;
@@ -736,7 +737,7 @@ ul {
 .apply-btn {
   display: inline-block;
   padding: 0.84rem 1.2rem;
-  border-radius: 2px;
+  border-radius: 0;
   margin-top: 0.45rem;
 }
 
