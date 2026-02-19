@@ -8,11 +8,13 @@ import WorkerDetails from "./pages/WorkerDetails";
 import CreateProfile from "./pages/CreateProfile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <div className="app-shell">
       {/* Global layout wrapper shared across all routes */}
+      <ScrollToTop />
       <Navbar />
       <main>
         {/* Page-level routing */}
