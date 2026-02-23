@@ -1,12 +1,54 @@
+﻿import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useWorkers } from "../context/WorkersContext";
 
 function WorkerDetails() {
   const { id } = useParams();
-  const { workers } = useWorkers();
-  const worker = workers.find((item) => item.id === id);
+  const { workers, getWorkerById } = useWorkers();
+  const [worker, setWorker] = useState(() => workers.find((item) => item.id === id) || null);
+  const [status, setStatus] = useState(worker ? "ready" : "loading");
 
-  if (!worker) {
+  useEffect(() => {
+    let active = true;
+
+    const existing = workers.find((item) => item.id === id);
+    if (existing) {
+      setWorker(existing);
+      setStatus("ready");
+      return () => {
+        active = false;
+      };
+    }
+
+    const load = async () => {
+      setStatus("loading");
+      try {
+        const fetched = await getWorkerById(id);
+        if (!active) return;
+        setWorker(fetched);
+        setStatus("ready");
+      } catch (_err) {
+        if (!active) return;
+        setStatus("notfound");
+      }
+    };
+
+    load();
+
+    return () => {
+      active = false;
+    };
+  }, [id, workers, getWorkerById]);
+
+  if (status === "loading") {
+    return (
+      <section className="section container">
+        <h1>Loading worker...</h1>
+      </section>
+    );
+  }
+
+  if (status === "notfound" || !worker) {
     return (
       <section className="section container">
         <h1>Worker not found</h1>

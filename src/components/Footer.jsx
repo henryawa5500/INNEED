@@ -1,4 +1,4 @@
-function SocialIcon({ name }) {
+﻿function SocialIcon({ name }) {
   const commonProps = {
     viewBox: "0 0 24 24",
     fill: "none",
@@ -62,10 +62,18 @@ function Footer() {
       <div className="container footer-grid">
         <div className="footer-brand-col">
           <p className="footer-brand">
-            <img src="/inneed-logo.svg" alt="" className="brand-mark" aria-hidden="true" />
+            <img
+              src="/inneed-logo.svg"
+              alt=""
+              className="brand-mark"
+              aria-hidden="true"
+            />
             INNEED
           </p>
-          <p>Great platform for the job seeker looking to find blue collar jobs and earn. Find your quick job easier.</p>
+          <p>
+            Great platform for the job seeker looking to find blue collar jobs
+            and earn. Find your quick job easier.
+          </p>
         </div>
 
         <div>
@@ -109,16 +117,22 @@ function Footer() {
 
         <div>
           <h4>Get job notifications</h4>
-          <p className="footer-copy">The latest job news, articles, sent to your inbox weekly.</p>
+          <p className="footer-copy">
+            The latest job news, articles, sent to your inbox weekly.
+          </p>
           <div className="footer-form">
-            <input type="email" placeholder="Email address" aria-label="Email" />
+            <input
+              type="email"
+              placeholder="Email address"
+              aria-label="Email"
+            />
             <button type="button">Subscribe</button>
           </div>
         </div>
       </div>
 
       <div className="container footer-bottom">
-        <p className="copyright">2026 @ Henryawa. All rights reserved.</p>
+        <p className="copyright">2026 @ INNEED. All rights reserved.</p>
         <div className="social-row">
           <a href="#!" className="social-chip" aria-label="Facebook">
             <SocialIcon name="facebook" />
@@ -142,3 +156,4 @@ function Footer() {
 }
 
 export default Footer;
+

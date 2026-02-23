@@ -1,53 +1,92 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { workers as seedWorkers } from "../data/workers";
+﻿import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { apiRequest } from "../api/client";
 
 const WorkersContext = createContext(null);
-const STORAGE_KEY = "inneed_workers_v1";
-
-function readStoredWorkers() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return seedWorkers;
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) return seedWorkers;
-    return parsed;
-  } catch {
-    return seedWorkers;
-  }
-}
 
 export function WorkersProvider({ children }) {
-  const [workers, setWorkers] = useState(readStoredWorkers);
+  const [workers, setWorkers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const refreshWorkers = useCallback(async (query = "") => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const path = query ? `/workers?${query}` : "/workers";
+      const data = await apiRequest(path);
+      setWorkers(Array.isArray(data) ? data : []);
+      return data;
+    } catch (err) {
+      setError(err.message || "Failed to load workers.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(workers));
-  }, [workers]);
+    refreshWorkers().catch(() => null);
+  }, [refreshWorkers]);
 
-  const addWorker = (payload) => {
-    const created = {
-      id: `worker-${Date.now()}`,
-      name: payload.name.trim(),
-      service: payload.service.trim(),
-      location: payload.location.trim(),
-      rating: payload.rating ?? 0,
-      jobsDone: payload.jobsDone ?? 0,
-      bio: payload.bio.trim(),
-      experience: payload.experience.trim(),
-      skills: payload.skills,
-      phone: payload.phone.trim(),
-      whatsapp: payload.whatsapp.trim(),
-    };
+  const addWorker = useCallback(async (payload, token) => {
+    const created = await apiRequest("/workers", {
+      method: "POST",
+      token,
+      body: payload,
+    });
 
     setWorkers((prev) => [created, ...prev]);
     return created;
-  };
+  }, []);
+
+  const updateWorker = useCallback(async (id, payload, token) => {
+    const updated = await apiRequest(`/workers/${id}`, {
+      method: "PUT",
+      token,
+      body: payload,
+    });
+
+    setWorkers((prev) => prev.map((item) => (item.id === id ? updated : item)));
+    return updated;
+  }, []);
+
+  const deleteWorker = useCallback(async (id, token) => {
+    await apiRequest(`/workers/${id}`, {
+      method: "DELETE",
+      token,
+    });
+
+    setWorkers((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
+  const getWorkerById = useCallback(
+    async (id) => {
+      const existing = workers.find((item) => item.id === id);
+      if (existing) return existing;
+
+      const fetched = await apiRequest(`/workers/${id}`);
+      setWorkers((prev) => {
+        const exists = prev.some((item) => item.id === fetched.id);
+        return exists ? prev : [fetched, ...prev];
+      });
+      return fetched;
+    },
+    [workers]
+  );
 
   const value = useMemo(
     () => ({
       workers,
+      loading,
+      error,
+      refreshWorkers,
       addWorker,
+      updateWorker,
+      deleteWorker,
+      getWorkerById,
     }),
-    [workers]
+    [workers, loading, error, refreshWorkers, addWorker, updateWorker, deleteWorker, getWorkerById]
   );
 
   return <WorkersContext.Provider value={value}>{children}</WorkersContext.Provider>;

@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import JobCard from "../components/JobCard";
 import { useJobs } from "../context/JobsContext";
 
 function Jobs() {
-  const { jobs } = useJobs();
+  const { jobs, loading, error } = useJobs();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const initialCategory = searchParams.get("category") || "All";
@@ -14,11 +14,20 @@ function Jobs() {
   const [category, setCategory] = useState(initialCategory);
   const [location, setLocation] = useState(initialLocation);
 
-  // Filter options are generated from source data to stay in sync as data evolves.
-  const categories = useMemo(() => ["All", ...new Set(jobs.map((job) => job.category))], [jobs]);
-  const locations = useMemo(() => ["All", ...new Set(jobs.map((job) => job.location.split(", ").pop()))], [jobs]);
+  const categories = useMemo(() => ["All", ...new Set(jobs.map((job) => job.category).filter(Boolean))], [jobs]);
+  const locations = useMemo(
+    () => [
+      "All",
+      ...new Set(
+        jobs
+          .map((job) => job.location)
+          .filter(Boolean)
+          .map((locationValue) => locationValue.split(", ").pop())
+      ),
+    ],
+    [jobs]
+  );
 
-  // Keep URL query params aligned with local filter state for sharable links.
   useEffect(() => {
     const params = {};
     if (search) params.search = search;
@@ -31,7 +40,7 @@ function Jobs() {
     return jobs.filter((job) => {
       const bySearch = `${job.title} ${job.description}`.toLowerCase().includes(search.toLowerCase());
       const byCategory = category === "All" || job.category === category;
-      const byLocation = location === "All" || job.location.toLowerCase().includes(location.toLowerCase());
+      const byLocation = location === "All" || (job.location || "").toLowerCase().includes(location.toLowerCase());
       return bySearch && byCategory && byLocation;
     });
   }, [jobs, search, category, location]);
@@ -67,8 +76,12 @@ function Jobs() {
         </select>
       </div>
 
+      {error ? <p className="form-error">{error}</p> : null}
+
       <div className="card-grid jobs-grid">
-        {filteredJobs.length > 0 ? (
+        {loading ? (
+          <p>Loading jobs...</p>
+        ) : filteredJobs.length > 0 ? (
           filteredJobs.map((job) => <JobCard key={job.id} job={job} />)
         ) : (
           <p>No jobs found for the current filters.</p>

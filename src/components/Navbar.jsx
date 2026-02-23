@@ -1,8 +1,10 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const closeMenu = () => setIsOpen(false);
 
@@ -40,6 +42,31 @@ function Navbar() {
           >
             Find Workers
           </NavLink>
+
+          {isAuthenticated ? (
+            <>
+              <span className="nav-user">{user?.name}</span>
+              <button
+                type="button"
+                className="nav-logout"
+                onClick={() => {
+                  logout();
+                  closeMenu();
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <NavLink
+              to="/auth"
+              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+              onClick={closeMenu}
+            >
+              Login
+            </NavLink>
+          )}
+
           <span className="nav-divider" aria-hidden="true" />
           <Link to="/post-job" className="post-job-btn" onClick={closeMenu}>
             Post Job

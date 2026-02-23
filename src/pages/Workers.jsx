@@ -1,15 +1,15 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WorkerCard from "../components/WorkerCard";
 import { useWorkers } from "../context/WorkersContext";
 
 function Workers() {
   const navigate = useNavigate();
-  const { workers } = useWorkers();
+  const { workers, loading, error } = useWorkers();
   const [search, setSearch] = useState("");
   const [service, setService] = useState("All");
 
-  const services = useMemo(() => ["All", ...new Set(workers.map((worker) => worker.service))], [workers]);
+  const services = useMemo(() => ["All", ...new Set(workers.map((worker) => worker.service).filter(Boolean))], [workers]);
 
   const filteredWorkers = useMemo(() => {
     return workers.filter((worker) => {
@@ -48,8 +48,12 @@ function Workers() {
         </select>
       </div>
 
+      {error ? <p className="form-error">{error}</p> : null}
+
       <div className="card-grid worker-grid">
-        {filteredWorkers.length > 0 ? (
+        {loading ? (
+          <p>Loading workers...</p>
+        ) : filteredWorkers.length > 0 ? (
           filteredWorkers.map((worker) => <WorkerCard key={worker.id} worker={worker} />)
         ) : (
           <p>No worker profile matches the current filters.</p>

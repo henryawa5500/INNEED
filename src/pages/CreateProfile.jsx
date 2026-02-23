@@ -1,11 +1,15 @@
-import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWorkers } from "../context/WorkersContext";
+import { useAuth } from "../context/AuthContext";
 
 function CreateProfile() {
   const navigate = useNavigate();
   const { addWorker } = useWorkers();
+  const { user, token, isAuthenticated } = useAuth();
+
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     service: "",
@@ -14,8 +18,19 @@ function CreateProfile() {
     experience: "",
     skills: "",
     phone: "",
-    whatsapp: "2348000000000",
+    whatsapp: "",
   });
+
+  useEffect(() => {
+    if (!user) return;
+    setForm((prev) => ({
+      ...prev,
+      name: prev.name || user.name || "",
+      location: prev.location || user.location || "",
+      phone: prev.phone || user.phone || "",
+      whatsapp: prev.whatsapp || user.phone || "",
+    }));
+  }, [user]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -23,7 +38,7 @@ function CreateProfile() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!form.name.trim() || !form.service.trim() || !form.location.trim()) {
@@ -36,15 +51,40 @@ function CreateProfile() {
       .map((item) => item.trim())
       .filter(Boolean);
 
-    const created = addWorker({
-      ...form,
-      rating: 0,
-      jobsDone: 0,
-      skills,
-    });
+    setSubmitting(true);
 
-    navigate(`/workers/${created.id}`);
+    try {
+      const created = await addWorker(
+        {
+          ...form,
+          skills,
+        },
+        token
+      );
+
+      navigate(`/workers/${created.id}`);
+    } catch (err) {
+      setError(err.message || "Failed to create worker profile.");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (!isAuthenticated || user?.role !== "worker") {
+    return (
+      <section className="section container create-profile-page">
+        <h1>Create Worker Profile</h1>
+        <p className="muted">You need to sign in with a worker account before creating a profile.</p>
+        <button
+          type="button"
+          className="apply-btn"
+          onClick={() => navigate(`/auth?next=${encodeURIComponent("/create-profile")}`)}
+        >
+          Sign In as Worker
+        </button>
+      </section>
+    );
+  }
 
   return (
     <section className="section container create-profile-page">
@@ -69,7 +109,7 @@ function CreateProfile() {
 
         <label>
           Phone Number
-          <input name="phone" value={form.phone} onChange={onChange} placeholder="+2348012345678" />
+          <input name="phone" value={form.phone} onChange={onChange} placeholder="2348012345678" />
         </label>
 
         <label className="full-row">
@@ -107,11 +147,9 @@ function CreateProfile() {
         {error ? <p className="form-error">{error}</p> : null}
 
         <div className="post-job-actions full-row">
-          <button type="button" className="ghost-btn" onClick={() => navigate("/workers")}>
-            Cancel
-          </button>
-          <button type="submit" className="apply-btn">
-            Create Profile
+          <button type="button" className="ghost-btn" onClick={() => navigate("/workers")}>Cancel</button>
+          <button type="submit" className="apply-btn" disabled={submitting}>
+            {submitting ? "Creating..." : "Create Profile"}
           </button>
         </div>
       </form>

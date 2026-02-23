@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useJobs } from "../context/JobsContext";
+import { useAuth } from "../context/AuthContext";
 
 function PostJob() {
   const navigate = useNavigate();
   const { addJob } = useJobs();
+  const { user, token, isAuthenticated } = useAuth();
 
   const categories = useMemo(
     () => ["Cleaner", "Tutoring", "Delivery", "Event Staff", "Errands", "Gardener", "Tailor", "Care Taker"],
@@ -21,9 +23,19 @@ function PostJob() {
     postedBy: "",
     description: "",
     requirements: "",
-    contactWhatsapp: "2348000000000",
+    contactWhatsapp: "",
   });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    setForm((prev) => ({
+      ...prev,
+      postedBy: prev.postedBy || user.name || "",
+      contactWhatsapp: prev.contactWhatsapp || user.phone || "",
+    }));
+  }, [user]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -31,7 +43,7 @@ function PostJob() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!form.title.trim() || !form.location.trim() || !form.pay.trim() || !form.postedBy.trim() || !form.description.trim()) {
@@ -44,13 +56,40 @@ function PostJob() {
       .map((item) => item.trim())
       .filter(Boolean);
 
-    const created = addJob({
-      ...form,
-      requirements: requirements.length > 0 ? requirements : ["No specific requirements listed."],
-    });
+    setSubmitting(true);
 
-    navigate(`/jobs/${created.id}`);
+    try {
+      const created = await addJob(
+        {
+          ...form,
+          requirements,
+        },
+        token
+      );
+
+      navigate(`/jobs/${created.id}`);
+    } catch (err) {
+      setError(err.message || "Failed to publish job.");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (!isAuthenticated || user?.role !== "employer") {
+    return (
+      <section className="section container post-job-page">
+        <h1>Post a Job</h1>
+        <p className="muted">You need to sign in with an employer account before posting a job.</p>
+        <button
+          type="button"
+          className="apply-btn"
+          onClick={() => navigate(`/auth?next=${encodeURIComponent("/post-job")}`)}
+        >
+          Sign In as Employer
+        </button>
+      </section>
+    );
+  }
 
   return (
     <section className="section container post-job-page">
@@ -134,11 +173,9 @@ function PostJob() {
         {error ? <p className="form-error">{error}</p> : null}
 
         <div className="post-job-actions full-row">
-          <button type="button" className="ghost-btn" onClick={() => navigate("/jobs")}>
-            Cancel
-          </button>
-          <button type="submit" className="apply-btn">
-            Publish Job
+          <button type="button" className="ghost-btn" onClick={() => navigate("/jobs")}>Cancel</button>
+          <button type="submit" className="apply-btn" disabled={submitting}>
+            {submitting ? "Publishing..." : "Publish Job"}
           </button>
         </div>
       </form>
