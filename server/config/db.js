@@ -1,43 +1,47 @@
-const { Pool } = require("pg");
+const { neon } = require("@neondatabase/serverless");
 
-let cachedPool = null;
+let cachedClient = null;
 let connectionPromise = null;
 
-const getConnectionString = () =>
-  process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
+const getConnectionString = () => {
+  const isProd = process.env.NODE_ENV === "production";
+  const pooled = process.env.v1_DATABASE_URL || process.env.v1_POSTGRES_URL;
+  const unpooled = process.env.v1_DATABASE_URL_UNPOOLED || process.env.v1_POSTGRES_URL_NON_POOLING;
+  const direct = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
 
-const getPool = () => {
-  if (cachedPool) return cachedPool;
+  if (isProd) {
+    return pooled || unpooled || direct;
+  }
+
+  return unpooled || pooled || direct;
+};
+
+const getClient = () => {
+  if (cachedClient) return cachedClient;
 
   const connectionString = getConnectionString();
   if (!connectionString) {
     throw new Error("DATABASE_URL is not set");
   }
 
-  const sslRequired =
-    /sslmode=require/i.test(connectionString) || process.env.PG_SSL === "true" || process.env.NODE_ENV === "production";
-
-  cachedPool = new Pool({
-    connectionString,
-    max: Number(process.env.PG_POOL_MAX || 5),
-    idleTimeoutMillis: Number(process.env.PG_IDLE_TIMEOUT_MS || 30000),
-    connectionTimeoutMillis: Number(process.env.PG_CONNECT_TIMEOUT_MS || 5000),
-    ssl: sslRequired ? { rejectUnauthorized: false } : undefined,
-  });
-
-  return cachedPool;
+  cachedClient = neon(connectionString);
+  return cachedClient;
 };
 
-const query = (text, params) => getPool().query(text, params);
+const query = async (text, params) => {
+  const sql = getClient();
+  const rows = await sql.query(text, params);
+  return { rows, rowCount: rows.length };
+};
 
 const connectDB = async () => {
   if (connectionPromise) return connectionPromise;
 
-  connectionPromise = getPool()
-    .query("SELECT 1")
+  const sql = getClient();
+  connectionPromise = sql.query("SELECT 1")
     .then(() => {
-      console.log("Postgres connected");
-      return cachedPool;
+      console.log("Neon connected");
+      return cachedClient;
     })
     .catch((err) => {
       connectionPromise = null;

@@ -1,5 +1,15 @@
 const dotenv = require("dotenv");
-dotenv.config();
+const path = require("path");
+
+const envCandidates = [
+  path.resolve(__dirname, "..", ".env.development.local"),
+  path.resolve(__dirname, "..", ".env"),
+  path.resolve(__dirname, ".env"),
+];
+
+envCandidates.forEach((envPath) => {
+  dotenv.config({ path: envPath });
+});
 const { connectDB } = require("./config/db");
 const app = require("./app");
 
