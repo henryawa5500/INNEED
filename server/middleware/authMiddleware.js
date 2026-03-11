@@ -1,5 +1,15 @@
-﻿const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const jwt = require("jsonwebtoken");
+const { query } = require("../config/db");
+
+const toUserPayload = (row) => ({
+  _id: row.id,
+  id: row.id,
+  name: row.name,
+  email: row.email,
+  role: row.role,
+  location: row.location,
+  phone: row.phone,
+});
 
 const protect = async (req, res, next) => {
   let token;
@@ -8,12 +18,16 @@ const protect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
+      const result = await query(
+        "SELECT id, name, email, role, location, phone FROM users WHERE id = $1",
+        [decoded.id]
+      );
 
-      if (!req.user) {
+      if (!result.rowCount) {
         return res.status(401).json({ message: "Not authorized, user not found" });
       }
 
+      req.user = toUserPayload(result.rows[0]);
       return next();
     } catch (_err) {
       return res.status(401).json({ message: "Not authorized, token failed" });
